@@ -38,11 +38,11 @@ The application defines 4 periodic tasks. Computation times ($C_i$) are simulate
 ### Shared Resources
 The tasks compete for 3 shared resources protected by binary semaphores.
 
-| ID | Resource Name | Used By | 
-|:--:|:-------------:|:-------:|
-| R0 | **Ice Machine** | $\tau_2$ | (Pour) |
-| R1 | **Pouring Pump**| $\tau_1, \tau_2$ | (Action) |
-| R2 | **Counter** | $\tau_0, \tau_2, \tau_3$ | (Drink Pour) |
+| ID | Resource Name | Used By | Usage Context |
+|:--:|:-------------:|:-------:|:--------------|
+| R0 | **Ice Machine** | $\tau_2$ | Pouring Phase |
+| R1 | **Pouring Pump**| $\tau_1, \tau_2$ | Option & Pour Phases |
+| R2 | **Counter** | $\tau_0, \tau_2, \tau_3$ | Order, Pour & Feedback |
 
 ---
 
