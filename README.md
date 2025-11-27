@@ -7,12 +7,14 @@
 * Gianluca Vairo
 * Pietro Luzzi
 
+**[Read the Full Project Report](docs/RTSA_Project_Report.pdf)**
+
 ---
 
 ## Project Overview
 This project simulates a **Robotic Bartender** control system running on the **VxWorks** Real-Time Operating System (RTOS). 
 
-The application consists of a set of periodic tasks that manage the order processing, drink preparation, and user feedback. The main goal is to analyze the system's schedulability and behavior under different **Resource Access Protocols (RAP)**, preventing priority inversion phenomena.
+The application coordinates multiple robotic operations (ordering, pouring, mixing) with shared resource access under strict real-time constraints. The main goal is to analyze the system's schedulability and prevent priority inversion using specific **Resource Access Protocols (RAP)**.
 
 The simulation allows verifying the feasibility of the task set and measuring worst-case response times and deadline misses (overruns).
 
@@ -26,21 +28,21 @@ The system uses a **Fixed Priority** preemptive scheduler. Priorities are assign
 ### Task Set
 The application defines 4 periodic tasks. Computation times ($C_i$) are simulated using busy-wait loops calibrated via `OPSMSEC`.
 
-| ID | Task Name | Period ($T_i$) | WCET ($C_i$) | Priority | Description |
-|:--:|:---------:|:--------------:|:------------:|:--------:|:------------|
-| $\tau_0$ | **OrderProcessing** | 6 ticks | 1.0 | High | Processes incoming orders. |
-| $\tau_1$ | **DrinkOption** | 9 ticks | 2.0 | Mid-High | Selects the drink type. |
-| $\tau_2$ | **DrinkPour** | 12 ticks | 3.0 | Mid-Low | Controls pumps and ice machine. |
-| $\tau_3$ | **Feedback** | 15 ticks | 1.0 | Low | Provides status feedback. |
+| ID | Task Name | Period ($T_i$) | WCET ($C_i$) | Phase ($\phi_i$) | Priority | Description |
+|:--:|:---------:|:--------------:|:------------:|:----------------:|:--------:|:------------|
+| $\tau_0$ | **Order Processing** | 6 ticks | 1.0 | 0 | High | Receives drink orders (gin, wine, beer). |
+| $\tau_1$ | **Drink Option** | 9 ticks | 2.0 | 2 | Mid-High | Handles optional specifications (e.g., tonic/lemon). |
+| $\tau_2$ | **Drink Pour** | 12 ticks | 3.0 | 4 | Mid-Low | Pours the selected drink using pumps/machines. |
+| $\tau_3$ | **Feedback** | 15 ticks | 1.0 | 5 | Low | Notifies the user that the drink is ready. |
 
 ### Shared Resources
 The tasks compete for 3 shared resources protected by binary semaphores.
 
 | ID | Resource Name | Used By |
 |:--:|:-------------:|:-------:|
-| R0 | **Ice Machine** | $\tau_2$ |
+| R0 | **Ice Machine** | $\tau_2$ | (Pour)
 | R1 | **Pouring Pump**| $\tau_1, \tau_2$ |
-| R2 | **Counter** | $\tau_0, \tau_2, \tau_3$ |
+| R2 | **Counter** | $\tau_0, \tau_2, \tau_3$ | (Drink Pour)
 
 ---
 
@@ -56,13 +58,31 @@ To manage critical sections and avoid unbounded priority inversion, the simulati
 
 ---
 
+## 📊 Feasibility Analysis
+
+We performed a theoretical feasibility analysis using the **Rate Monotonic** utilization bound and **Response Time Analysis (RTA)**.
+
+* **Total Processor Utilization ($U$):**
+  $$U = \sum \frac{C_i}{T_i} = \frac{1}{6} + \frac{2}{9} + \frac{3}{12} + \frac{1}{15} \approx \mathbf{0.7056}$$
+  
+* **Schedulability Result:** The system is fully schedulable ($U \le N(2^{1/N}-1)$ holds).
+  
+* **Max Blocking Times:**
+  * **PIP:** ~1.0 ticks
+  * **NPP:** ~3.0 ticks
+
+For detailed timing diagrams (SystemViewer traces) and analysis of Synchronous vs. Phased activation, please refer to the [Project Report](docs/RTSA_Project_Report.pdf).
+
+---
+
 ## Project Structure
 
-* `application.c/h`: Defines the behavior of the periodic tasks and their critical sections.
-* `resources.c/h`: Wrapper functions for semaphore management (`EntrySection`/`ExitSection`) implementing the logic for NPP and PIP.
-* `metascheduler.c`: Handles the periodic activation of tasks and collects timing statistics (Response Times, Overruns).
-* `simulation.c`: Main entry point. Sets up the VxWorks tasks, semaphores, and watchdog timers.
-* `dummyTask.c`: Calibration functions to simulate CPU load.
+* `src/application.c/h`: Defines the behavior of the periodic tasks and their critical sections.
+* `src/resources.c/h`: Wrapper functions for semaphore management (`EntrySection`/`ExitSection`) implementing the logic for NPP and PIP.
+* `src/metascheduler.c`: Handles the periodic activation of tasks and collects timing statistics (Response Times, Overruns).
+* `src/simulation.c`: Main entry point. Sets up the VxWorks tasks, semaphores, and watchdog timers.
+* `src/dummyTask.c`: Calibration functions to simulate CPU load.
+* `docs/`: Contains the detailed project report and analysis.
 
 ---
 
@@ -71,14 +91,15 @@ To manage critical sections and avoid unbounded priority inversion, the simulati
 This project is designed to be compiled and run using **WindRiver Workbench** (targeting a VxWorks 7 simulator or similar BSP).
 
 ### 1. Setup the Project
-Since project files (`.wpj`, `.wr`) are environment-specific, they are not included. Follow these steps to build from source:
+Since project files (`.wpj`, `.wr`) are environment-specific, they are not included.
+Follow these steps to build from source:
 1. Open **WindRiver Workbench**.
 2. Create a new **VxWorks Downloadable Kernel Module (DKM)** project.
 3. Import all files from the `src/` and `include/` folders of this repository into the new project.
 4. Build the project.
 
 ### 2. Start the Simulation
-Once the kernel is running and the module is loaded:
+Once the kernel is running and the module is loaded (from the VxWorks kernel shell):
 
 #### Option A: Single Run
 Run the simulation for a specific duration (or 0 for one hyperperiod).
