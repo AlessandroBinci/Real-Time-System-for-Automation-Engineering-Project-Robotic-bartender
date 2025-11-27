@@ -84,15 +84,18 @@ Once the kernel is running and the module is loaded:
 Run the simulation for a specific duration (or 0 for one hyperperiod).
 ```c
 -> StartSimulation(0)
+```
 
 ## Option B: Batch Mode (Testing all Protocols)
 To verify the system behavior under all implemented protocols (NOP, NPP, PIP) sequentially:
 ```c
 -> BatchModeSimulation(0)
+```
 
 ## Expected output and results
 ### Example of batch simulation output
 Starting hyperperiod batch simulations
+```c
 0: No Resource Access Protocol
 ...
 Task1 OVERRUN!!!
@@ -103,6 +106,7 @@ Response Time [1] = 9 units
 Response Time [2] = 12 units
 Response Time [3] = 15 units
 Overruns: 0 0 0 0
+```
 
 #### Observation:
 Without a protocol (NOP), priority inversion may cause high-priority tasks to miss deadlines (Overruns > 0). Using NPP or PIP resolves these inversions, ensuring all tasks meet their deadlines.
