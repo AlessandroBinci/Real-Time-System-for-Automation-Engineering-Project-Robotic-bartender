@@ -58,7 +58,7 @@ To manage critical sections and avoid unbounded priority inversion, the simulati
 
 ---
 
-## 📊 Feasibility Analysis
+## Feasibility Analysis
 
 We performed a theoretical feasibility analysis using the **Rate Monotonic** utilization bound and **Response Time Analysis (RTA)**.
 
