@@ -107,7 +107,7 @@ Run the simulation for a specific duration (or 0 for one hyperperiod).
 -> StartSimulation(0)
 ```
 
-## Option B: Batch Mode (Testing all Protocols)
+#### Option B: Batch Mode (Testing all Protocols)
 To verify the system behavior under all implemented protocols (NOP, NPP, PIP) sequentially:
 ```c
 -> BatchModeSimulation(0)
