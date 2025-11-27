@@ -113,7 +113,9 @@ Without a protocol (NOP), priority inversion may cause high-priority tasks to mi
 
 ## References
 *Course: Real-Time Systems for Automation (M3), Prof. Paolo Torroni.
+
 *Theory: * Hard Real-Time Computing Systems, G. Buttazzo (2011).
+
 *VxWorks 7 Programmer's Guide.
 
 
