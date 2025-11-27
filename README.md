@@ -112,9 +112,9 @@ Overruns: 0 0 0 0
 Without a protocol (NOP), priority inversion may cause high-priority tasks to miss deadlines (Overruns > 0). Using NPP or PIP resolves these inversions, ensuring all tasks meet their deadlines.
 
 ## References
-Course: Real-Time Systems for Automation (M3), Prof. Paolo Torroni.
-Theory: * Hard Real-Time Computing Systems, G. Buttazzo (2011).
-VxWorks 7 Programmer's Guide.
+*Course: Real-Time Systems for Automation (M3), Prof. Paolo Torroni.
+*Theory: * Hard Real-Time Computing Systems, G. Buttazzo (2011).
+*VxWorks 7 Programmer's Guide.
 
 
 
